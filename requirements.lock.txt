@@ -1,0 +1,7 @@
+# 锁定版本（本地验证环境，Python 3.13.12 / Windows）
+numpy==2.5.3
+pytest==9.1.1
+ruff==0.16.10
+coverage==7.16.2
+iniconfig==2.3.1
+colorama==0.4.6

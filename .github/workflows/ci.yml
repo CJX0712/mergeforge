@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Ruff check
+        run: ruff check .
+
+      - name: Ruff format check
+        run: ruff format --check .
+
+      - name: Secret scan
+        run: |
+          ! grep -rInE "(sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,}|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9-]{10,})" \
+            --include="*.py" --include="*.md" --include="*.yml" --include="*.toml" . \
+            || { echo "::error::疑似密钥泄漏"; exit 1; }
+
+      - name: Pytest
+        run: pytest -q
+
+      - name: Demo smoke (single seed, gates must pass)
+        run: python examples/run_demo.py
+
+      - name: Assert gates_pass
+        run: |
+          python - <<'EOF'
+          import json
+          report = json.load(open("benchmark.json", encoding="utf-8"))
+          assert report["gates_pass"] is True, f"门禁未通过: {report['gates']}"
+          print("G1-G6 all passed:", {k: v["pass"] for k, v in report["gates"].items()})
+          EOF
