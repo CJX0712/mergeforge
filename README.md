@@ -107,6 +107,8 @@ core/                                # 配置（ENV 覆盖 + schema 校验）/ �
 pytest              # 109 项：梯度校验 / 合并代数恒等式 / 端到端确定性 / CLI 冒烟
 ruff check .        # 零告警
 ruff format --check .
+coverage run --source=core,data,models,finetune,merging,eval,pipeline -m pytest && coverage report
+                    # 核心模块覆盖率 95%（CI 门禁 fail-under=80）
 ```
 
 合并代数恒等式测试（黄金性质）：soup 置换不变、TIES K=1 ≡ TA、TIES 全体一致 ≡ 算术平均、

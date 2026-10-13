@@ -41,6 +41,11 @@ jobs:
       - name: Pytest
         run: pytest -q
 
+      - name: Coverage gate (core modules >= 80%)
+        run: |
+          coverage run --source=core,data,models,finetune,merging,eval,pipeline -m pytest tests/ -q
+          coverage report --fail-under=80
+
       - name: Demo smoke (single seed, gates must pass)
         run: python examples/run_demo.py
 

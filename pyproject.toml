@@ -14,7 +14,7 @@ keywords = ["model-merging", "task-arithmetic", "ties-merging", "model-soups", "
 dependencies = ["numpy>=2.0"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.16"]
+dev = ["pytest>=8", "ruff>=0.16", "coverage>=7"]
 
 [tool.setuptools.packages.find]
 include = ["core*", "data*", "models*", "finetune*", "merging*", "eval*", "pipeline*"]
